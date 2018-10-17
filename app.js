@@ -10,12 +10,15 @@ require('dotenv').config()
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+var sellingRouter = require('./routes/selling');
+var reportRouter = require('./routes/report');
 
 console.log("node env =", process.env.NODE_ENV)
 let MONGO_URI = {
   pro: process.env.MONGO_URI_PRO,
   test: process.env.MONGO_URI_TEST
 }
+
 
 mongoose.connect(MONGO_URI[process.env.NODE_ENV], { useNewUrlParser: true, reconnectTries: Number.MAX_VALUE })
 const db = mongoose.connection;
@@ -26,6 +29,7 @@ db.once('open', function() {
 
 const app = express();
 
+app.use(cors())
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -38,6 +42,8 @@ app.use(cors())
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/selling', sellingRouter)
+app.use('/reports', reportRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
