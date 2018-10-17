@@ -64,6 +64,46 @@ const findSelling = (req, res) => {
     });
 }
 
+const findUserTodaySelling = (req, res) => {
+    User.findOne({
+        idTelegram: req.params.id
+    })
+    .then((user) => {
+        if (user) {
+            Selling.findOne({ userId : user._id })
+                .then((result) => {
+                    if (result == null) {
+                        res.status(200).json({
+                            msg: 'data not found',
+                        })
+                    } else {
+                        let sellingDate = new Date(result.createdAt)
+                        let nowDate = new Date()
+                        if ( sellingDate.getDate() === nowDate.getDate() ) {
+                            res.status(200).json({
+                                msg: 'data found',
+                                result
+                            })
+                        } else {
+                            res.status(200).json({
+                                msg: 'data not found for today',
+                            })
+                        }
+                    }
+                }).catch((err) => {
+                    res.status(500).json(err)
+                });
+        } else {
+            res.status(200).json({
+                msg: 'user not found'
+            })
+        }
+    })
+    .catch((err) => {
+        res.status(500).json(err)
+    });
+}
+
 const updateSelling = (req, res) => {
     let idSelling = req.params.id
     Selling.findOneAndUpdate({
@@ -101,5 +141,6 @@ module.exports = {
     createSelling,
     findSelling,
     updateSelling,
-    removeSelling
+    removeSelling,
+    findUserTodaySelling
 };
