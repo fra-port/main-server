@@ -1,14 +1,17 @@
+require('dotenv').config()
+process.env.NODE_ENV = "test"
+const server = require('../bin/www')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const mongoose = require('mongoose')
 const sellingHistory = require('../models/sellingHistory')
 const User = require('../models/user')
-require('dotenv').config()
 chai.should()
 chai.use(chaiHttp)
 let url = "http://localhost:3000"
 let historyId = ""
 let userId = ""
+let idTelegram = ""
 
 describe('Selling History', function () {
     this.timeout(500000)
@@ -26,8 +29,10 @@ describe('Selling History', function () {
             })
                 .then(function (result) {
                     userId = result._id
-                    if(result){
-                        
+                    idTelegram = result.idTelegram
+
+                    if (result) {
+
                         sellingHistory.create({
                             userId: userId,
                             selling: [{
@@ -40,19 +45,16 @@ describe('Selling History', function () {
                                 total: 15000
                             }]
                         })
-                            .then(function (result) {
+                            .then(function (resultHistory) {
                                 // console.log('oooo',result);
-    
-                                historyId = result._id
+
+                                historyId = resultHistory._id
                                 done()
                             })
                             .catch(function (err) {
                                 done()
                             })
-
                     }
-
-                    done()
                 })
                 .catch(function (err) {
                     done()
@@ -65,29 +67,20 @@ describe('Selling History', function () {
 
         User.collection.drop()
             .then(function () {
-                // console.log("drop User collection");
-                done()
-            })
-            .catch(function () {
-                done()
+                sellingHistory.collection.drop()
+                    .then(function () {
+                        done()
+                    })       
             })
 
-        sellingHistory.collection.drop()
-            .then(function () {
-                // console.log("drop User collection");
-                done()
-            })
-            .catch(function () {
-
-            })
     })
 
     it('POST  /selling should success create a selling history', function (done) {
         chai.request(url)
             .post('/selling')
             .send({
-                userId: userId,
-                selling: [{
+                idTelegram:idTelegram,
+                item: [{
                     itemName: "dada",
                     quantity: 1,
                     Total: 10000
@@ -98,58 +91,43 @@ describe('Selling History', function () {
                 }]
             })
             .end(function (err, res) {
-                res.should.have.status(200)
+                
+                res.should.have.status(201)
                 res.should.be.json;
                 res.body.should.be.a('object')
-                res.body.msg.should.equal('create selling success')
-                res.body.data.should.be.a('object')
-                res.body.data.should.have.property('userId')
-                res.body.data.should.have.property('selling')
-                res.body.data.should.have.property('createdAt')
-                res.body.data.should.have.property('updatedAt')
-                res.body.data.userId.should.equal(userId)
-                res.body.data.selling.should.equal([{
-                    itemName: "dada",
-                    quantity: 1,
-                    Total: 10000
-                }, {
-                    itemName: "paha",
-                    quantity: 2,
-                    total: 15000
-                }])
+                res.body.msg.should.equal('create selling succes')
+                res.body.result.should.be.a('object')
+                res.body.result.should.have.property('userId')
+                res.body.result.should.have.property('selling')
+                res.body.result.should.have.property('createdAt')
+                res.body.result.should.have.property('updatedAt')
                 done()
             })
     })
 
-    // it('POST /users should unable register using existed email or id telegram', function (done) {
-    //     chai.request(url)
-    //         .post('/users')
-    //         .send({
-    //             firstName: "made",
-    //             lastName: "sumarsana",
-    //             email: "made.sumarsana@gmail.com",
-    //             address: "tanah kusir",
-    //             phoneNumber: "08123457823",
-    //             idTelegram: "1234",
-    //             propicURL: "http://newbabywallpapers.in/image/baby-image-photo-and-wallpaper/baby-image-photo-and-wallpaper-12.jpg"
-    //         })
-    //         .end(function (err, res) {
-    //             res.should.have.status(201)
-    //             res.should.be.json
-    //             res.body.should.be.a('object')
-    //             res.body.msg.should.equal('telegram Id or email already exist, please choose another telegram Id or email')
-    //             done()
-    //         })
-    // })
+    it('POST  /selling should error create selling history when required field not exist', function (done) {
+        chai.request(url)
+            .post('/selling')
+            .send({
+                userId: userId,
+            })
+            .end(function (err, res) {
+                res.should.have.status(200)
+                done()
+            })
+    })
 
     it('Get /selling should return array of selling history', function (done) {
         chai.request(url)
             .get('/selling')
             .end(function (err, res) {
+
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
-                res.body.msg.should.equal("data found")
+                res.body.should.be.a('array')
+                res.body.should.have.lengthOf(1)
+                res.body[0].should.have.property('_id')
                 done()
             })
     })
@@ -157,23 +135,37 @@ describe('Selling History', function () {
     it('Get /selling/:id should return selling history by id', function (done) {
         chai.request(url)
             .get(`/selling/${historyId}`)
-            .end(function (err, res) {
+            .end(function (err, res) {;
+                
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
-                res.body.msg.should.equal("successfully get user")
-                res.body.data.should.have.property('userId')
-                res.body.data.should.have.property('selling')
-                res.body.data.userId.should.equal(userId)
-                res.body.data.selling.should.equal([{
-                    itemName: "dada",
-                    quantity: 1,
-                    Total: 10000
-                }, {
-                    itemName: "paha",
-                    quantity: 2,
-                    total: 15000
-                }])
+                res.body.msg.should.equal("data found")
+                res.body.result.should.be.a("object")
+                done()
+            })
+    })
+
+    it('Get /selling/:id should return error selling', function (done) {
+        chai.request(url)
+            .get(`/selling/${userId}`)
+            .end(function (err, res) {;
+                
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.msg.should.equal("data  not found")
+                done()
+            })
+    })
+
+    it('Get /selling/:id should return catch error selling', function (done) {
+        chai.request(url)
+            .get(`/selling/1`)
+            .end(function (err, res) {;
+                res.should.have.status(500)
+                res.should.be.json
+                res.should.be.a('object')
                 done()
             })
     })
@@ -190,6 +182,17 @@ describe('Selling History', function () {
             })
     })
 
+    it('PUT /selling/:id should error update user', function (done) {
+        chai.request(url)
+            .put(`/selling/1`)
+            .end(function (err, res) {
+                res.should.have.status(500)
+                res.should.be.json
+                res.should.be.a('object')
+                done()
+            })
+    })
+
     it('DELETE /selling/:id should able delete user', function (done) {
         chai.request(url)
             .delete(`/selling/${userId}`)
@@ -197,7 +200,18 @@ describe('Selling History', function () {
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
-                res.body.message.should.equal("delete succes")
+                res.body.msg.should.equal("delete succes")
+                done()
+            })
+    })
+
+    it('DELETE /selling/:id should error delete user', function (done) {
+        chai.request(url)
+            .delete(`/selling/1`)
+            .end(function (err, res) {
+                res.should.have.status(500)
+                res.should.be.json
+                res.should.be.a('object')
                 done()
             })
     })
