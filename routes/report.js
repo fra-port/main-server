@@ -5,7 +5,6 @@ const { createReport, updateReport, getReport, removeReport, findReport} = requi
 router.get('/', getReport)
       .get('/:id', findReport)
       .post('/', createReport )
-      .put('/:id', updateReport)
       .delete('/:id', removeReport)
 
 module.exports = router;

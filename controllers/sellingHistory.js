@@ -1,21 +1,37 @@
 const Selling = require('../models/sellingHistory');
+const User = require('../models/user');
 
 const createSelling = (req, res) => {
-    
-    let { userId, item} = req.body
-    Selling.create({
-        userId: userId,
-        selling: item
+
+    let { idTelegram, item} = req.body
+    User.findOne({
+        idTelegram: idTelegram
     })
     .then((result) => {
-        res.status(201).json({
-            msg: 'create selling succes',
-            result
-        })
+        if (result) {
+            Selling.create({
+                userId: result._id,
+                selling: item
+            })
+            .then((result) => {
+                res.status(201).json({
+                    msg: 'create selling succes',
+                    result
+                })
+            })
+            .catch((err) => {
+                res.status(500).json(err)
+            });
+        } else {
+            res.status(200).json({
+                msg: 'data not found'
+            })
+        }
     })
     .catch((err) => {
         res.status(500).json(err)
     });
+   
 }
 
 const getSelling = (req, res) =>{
@@ -32,10 +48,17 @@ const findSelling = (req, res) => {
     let id = req.params.id
     Selling.findById(id)
     .then((result) => {
-        res.status(200).json({
-            msg: 'data found',
-            result
-        })
+        if (result == null) {
+            res.status(200).json({
+                msg: 'data  not found',
+            })
+        } else {
+            res.status(200).json({
+                msg: 'data found',
+                result
+            })
+        }
+       
     }).catch((err) => {
         res.status(500).json(err)
     });
@@ -43,7 +66,6 @@ const findSelling = (req, res) => {
 
 const updateSelling = (req, res) => {
     let idSelling = req.params.id
-    
     Selling.findOneAndUpdate({
         _id: idSelling
     }, {
