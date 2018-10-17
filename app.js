@@ -4,7 +4,20 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config()
+
 var indexRouter = require('./routes/index');
+
+
+mongoose.connect(process.env.db,{ useNewUrlParser: true });
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  // we're connected!
+  console.log('connect to mongooooooooo');
+});
 
 var app = express();
 
