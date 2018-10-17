@@ -20,6 +20,7 @@ const createSelling = (req, res) => {
                 })
             })
             .catch((err) => {
+                /* istanbul ignore next */
                 res.status(500).json(err)
             });
         } else {
@@ -29,6 +30,7 @@ const createSelling = (req, res) => {
         }
     })
     .catch((err) => {
+        /* istanbul ignore next */
         res.status(500).json(err)
     });
    
@@ -40,6 +42,7 @@ const getSelling = (req, res) =>{
         res.status(200).json(result)
     })
     .catch((err) => {
+        /* istanbul ignore next */
         res.status(500).json(err)
     });
 }
