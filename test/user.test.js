@@ -9,6 +9,7 @@ chai.should()
 chai.use(chaiHttp)
 let url = "http://localhost:3000"
 let userId = ""
+let idTelegram = ""
 
 describe('User', function() {
   this.timeout(500000)
@@ -25,6 +26,7 @@ describe('User', function() {
       })
       .then ( function (result) {
         userId = result._id
+        idTelegram = result.idTelegram
         done()
       })
       .catch (function (err) {
@@ -125,9 +127,9 @@ describe('User', function() {
       })
   })
 
-  it('Get /users/:id should return user by id',  function (done) {
+  it('Get /users/:id should return user by telegram id',  function (done) {
     chai.request(url)
-      .get(`/users/one/${userId}`)
+      .get(`/users/one/${idTelegram}`)
       .end(function (err, res) {
           res.should.have.status(200)
           res.should.be.json
@@ -198,15 +200,6 @@ describe('User', function() {
   it('GET /users/one/:id with invalid object id should return error',  function (done) {
     chai.request(url)
       .get(`/users/one/123213`)
-      .end(function (err, res) {
-          res.should.have.status(400)
-          done()
-      })
-  })
-
-  it('GET /users/one/:id with invalid id should return error',  function (done) {
-    chai.request(url)
-      .get(`/users/one/5bc720b7b9a1a87500df7243`)
       .end(function (err, res) {
           res.should.have.status(400)
           done()

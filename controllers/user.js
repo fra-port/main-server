@@ -65,7 +65,7 @@ const getAll = function (req, res) {
 
 const getOne = function (req, res) {
   User.findOne({
-    _id : req.params.id
+    idTelegram : req.params.id
   })
     .then(user => {
       if (user) {

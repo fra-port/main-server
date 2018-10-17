@@ -64,6 +64,36 @@ const findSelling = (req, res) => {
     });
 }
 
+const findUserTodaySelling = (req, res) => {
+    User.findOne({
+        idTelegram: req.params.id
+    })
+    .then((result) => {
+        if (result) {
+            Selling.create({
+                userId: result._id,
+                selling: item
+            })
+            .then((result) => {
+                res.status(201).json({
+                    msg: 'create selling succes',
+                    result
+                })
+            })
+            .catch((err) => {
+                res.status(500).json(err)
+            });
+        } else {
+            res.status(200).json({
+                msg: 'data not found'
+            })
+        }
+    })
+    .catch((err) => {
+        res.status(500).json(err)
+    });
+}
+
 const updateSelling = (req, res) => {
     let idSelling = req.params.id
     Selling.findOneAndUpdate({
