@@ -37,7 +37,7 @@ const createReport = (req, res) => {
 }
 
 const getReport = (req, res) => {
-  Report.find()
+  Report.find().populate({path : 'sellingId', populate : {path:'userId'}})
   .then((result) => {
     res.status(200).json({
       msg: 'data found',
@@ -51,7 +51,7 @@ const getReport = (req, res) => {
 
 const findReport = (req, res) => {
   let id = req.params.id
-  Report.findById(id)
+  Report.findById(id).populate({path : 'sellingId', populate : {path:'userId'}})
   .then((result) => {
     if (result == null) {
       res.status(200).json({

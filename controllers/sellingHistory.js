@@ -35,7 +35,7 @@ const createSelling = (req, res) => {
 }
 
 const getSelling = (req, res) =>{
-    Selling.find()
+    Selling.find().populate('userId')
     .then((result) => {
         res.status(200).json(result)
     })
@@ -46,7 +46,7 @@ const getSelling = (req, res) =>{
 
 const findSelling = (req, res) => {
     let id = req.params.id
-    Selling.findById(id)
+    Selling.findById(id).populate('userId')
     .then((result) => {
         if (result == null) {
             res.status(200).json({
