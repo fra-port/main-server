@@ -108,7 +108,7 @@ const update = function (req,res) {
 }
 
 const remove = function (req, res) {
-  User.remove({
+  User.deleteOne({
     _id: req.params.id
   })
   .then(result => {

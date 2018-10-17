@@ -1,8 +1,10 @@
+require('dotenv').config()
+process.env.NODE_ENV = "test"
+const server = require ('../bin/www')
 const chai = require ('chai')
 const chaiHttp = require ('chai-http')
 const mongoose = require ('mongoose')
 const User = require ('../models/user')
-require('dotenv').config()
 chai.should() 
 chai.use(chaiHttp)
 let url = "http://localhost:3000"
@@ -75,6 +77,19 @@ describe('User', function() {
         res.body.data.propicURL.should.equal('http://newbabywallpapers.in/image/baby-image-photo-and-wallpaper/baby-image-photo-and-wallpaper-12.jpg')        
         done()  
       })
+  })
+
+  it('POST  /users should error register a new user when required field not exist', function(done) {
+    chai.request(url)
+      .post('/users')
+      .send({
+        firstName: "adi",
+        lastName: "putra"
+      })
+      .end(function (err, res) {
+        res.should.have.status(400)
+        done()
+    })
   })
 
   it('POST /users should unable register using existed email or id telegram', function (done) {
@@ -158,6 +173,42 @@ describe('User', function() {
           res.should.be.json
           res.should.be.a('object')
           res.body.message.should.equal("delete user success")
+          done()
+      })
+  })
+
+  it('DELETE /users/:id with invalid id should return error',  function (done) {
+    chai.request(url)
+      .delete(`/users/123213`)
+      .end(function (err, res) {
+          res.should.have.status(400)
+          done()
+      })
+  })
+
+  it('UPDATE /users/:id with invalid id should return error',  function (done) {
+    chai.request(url)
+      .put(`/users/123213`)
+      .end(function (err, res) {
+          res.should.have.status(400)
+          done()
+      })
+  })
+
+  it('GET /users/one/:id with invalid object id should return error',  function (done) {
+    chai.request(url)
+      .get(`/users/one/123213`)
+      .end(function (err, res) {
+          res.should.have.status(400)
+          done()
+      })
+  })
+
+  it('GET /users/one/:id with invalid id should return error',  function (done) {
+    chai.request(url)
+      .get(`/users/one/5bc720b7b9a1a87500df7243`)
+      .end(function (err, res) {
+          res.should.have.status(400)
           done()
       })
   })
