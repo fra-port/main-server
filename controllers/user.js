@@ -1,28 +1,49 @@
 const User = require('../models/user.js')
 
 const create = function (req,res) {
-  User.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    address: req.body.address,
-    phoneNumber : req.body.phoneNumber,
-    idTelegram: req.body.idTelegram,
-    propicURL: req.body.propicURL
+  User.findOne({
+    $or : [
+      { idTelegram: req.body.idTelegram },
+      { email: req.body.email }
+    ]
   })
-  .then((user)=> {
-    res.status(200)
-      .json({
-        msg: "successfully create user",
-        data: user
-      })
-  })
-  .catch((err) => {
-    res.status(400)
-      .json({
-        msg: err.message
-      })
-  })
+    .then(function(dataUser) {
+      if (dataUser) {
+        res.status(201)
+          .json({
+            msg: 'telegram Id or email already exist, please choose another telegram Id or email'
+          })
+      } else {
+        User.create({
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          address: req.body.address,
+          phoneNumber: req.body.phoneNumber,
+          idTelegram: req.body.idTelegram,
+          propicURL: req.body.propicURL
+        })
+        .then((user)=> {
+          res.status(200)
+            .json({
+              msg: "successfully create user",
+              data: user
+            })
+        })
+        .catch((err) => {
+          res.status(400)
+            .json({
+              msg: err.message
+            })
+        })
+      }
+    })
+    .catch((err) => {
+      res.status(400)
+        .json({
+          msg: err.message
+        })
+    })
 }
 
 const getAll = function (req, res) {
