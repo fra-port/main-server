@@ -3,8 +3,7 @@ const Schema = mongoose.Schema;
 
 var item = new Schema ({itemName: String, quantity: Number, Total: Number})
 var sellingSchema = new Schema({
-    // userId : {type: Schema.Types.ObjectId, ref: 'User'},
-    userId: String,
+    userId : {type: Schema.Types.ObjectId, ref: 'User'},
     selling: [item]
 }, {
     timestamps: true

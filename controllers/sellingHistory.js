@@ -1,6 +1,7 @@
 const Selling = require('../models/sellingHistory');
 
 const createSelling = (req, res) => {
+    
     let { userId, item} = req.body
     Selling.create({
         userId: userId,
