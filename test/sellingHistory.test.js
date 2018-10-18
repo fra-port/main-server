@@ -17,7 +17,6 @@ describe('Selling History', function () {
     this.timeout(500000)
     beforeEach((done) => {
         mongoose.connect(process.env.MONGO_URI_TEST, { useNewUrlParser: true }).then(function () {
-
             User.create({
                 firstName: "made",
                 lastName: "sumarsana",
@@ -242,8 +241,6 @@ describe('Selling History', function () {
                 userId:userId
             })
             .end(function (err, res) {
-                 console.log('asdasdasd',res.body);
-                
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
