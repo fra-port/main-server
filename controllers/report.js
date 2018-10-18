@@ -1,6 +1,7 @@
 const Report = require('../models/report');
 const Selling = require('../models/sellingHistory');
 const Item = require('../models/item');
+// const User 
 
 const getItem = async () => {
   try {
@@ -159,10 +160,45 @@ const removeReport = (req, res) => {
 }
 
 
+const getReportMonthly = (req, res) => {
+  
+  let month = req.query.month
+ 
+  Report.find().populate({ path: 'sellingId', populate: { path: 'userId' } })
+  .then( async (result) => {
+    let listItem = await getItem()
+    let incomeMonth = 0
+    result.forEach(element => {
+      if (element.createdAt.getMonth()+1 == month) {
+        incomeMonth += element.total
+        element.sellingId.selling.forEach(el => {
+          listItem.forEach((elementListItem, index) => {
+            if (el.itemName.toLowerCase() == elementListItem.name.toLowerCase()) {
+              listItem[index].totalSelling += Number(el.quantity) + 0
+            }
+          })
+        })
+      }
+    });
+
+
+
+    console.log(listItem);
+    console.log(incomeMonth);
+    
+  })
+  .catch((err) => {
+    console.log(err);
+    
+  });
+}
+
+
 module.exports = {
   createReport,
   getReport,
   findReport,
   removeReport,
-  getReportByDate
+  getReportByDate,
+  getReportMonthly
 };
