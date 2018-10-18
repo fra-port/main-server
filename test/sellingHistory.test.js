@@ -242,8 +242,6 @@ describe('Selling History', function () {
                 userId:userId
             })
             .end(function (err, res) {
-                 console.log('asdasdasd',res.body);
-                
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')

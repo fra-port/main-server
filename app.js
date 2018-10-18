@@ -12,6 +12,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 var sellingRouter = require('./routes/selling');
 var reportRouter = require('./routes/report');
+const itemRouter = require('./routes/item');
 
 console.log("node env =", process.env.NODE_ENV)
 let MONGO_URI = {
@@ -44,6 +45,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/selling', sellingRouter)
 app.use('/reports', reportRouter)
+app.use('/items', itemRouter)
 
 
 module.exports = app;
