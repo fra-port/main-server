@@ -70,7 +70,7 @@ describe('Selling History', function () {
                 sellingHistory.collection.drop()
                     .then(function () {
                         done()
-                    })       
+                    })
             })
 
     })
@@ -79,7 +79,7 @@ describe('Selling History', function () {
         chai.request(url)
             .post('/selling')
             .send({
-                idTelegram:idTelegram,
+                idTelegram: idTelegram,
                 item: [{
                     itemName: "dada",
                     quantity: 1,
@@ -91,7 +91,7 @@ describe('Selling History', function () {
                 }]
             })
             .end(function (err, res) {
-                
+
                 res.should.have.status(201)
                 res.should.be.json;
                 res.body.should.be.a('object')
@@ -135,8 +135,9 @@ describe('Selling History', function () {
     it('Get /selling/:id should return selling history by id', function (done) {
         chai.request(url)
             .get(`/selling/${historyId}`)
-            .end(function (err, res) {;
-                
+            .end(function (err, res) {
+                ;
+
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
@@ -149,8 +150,9 @@ describe('Selling History', function () {
     it('Get /selling/:id should return error selling', function (done) {
         chai.request(url)
             .get(`/selling/${userId}`)
-            .end(function (err, res) {;
-                
+            .end(function (err, res) {
+                ;
+
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
@@ -162,7 +164,8 @@ describe('Selling History', function () {
     it('Get /selling/:id should return catch error selling', function (done) {
         chai.request(url)
             .get(`/selling/1`)
-            .end(function (err, res) {;
+            .end(function (err, res) {
+                ;
                 res.should.have.status(500)
                 res.should.be.json
                 res.should.be.a('object')
@@ -215,4 +218,41 @@ describe('Selling History', function () {
                 done()
             })
     })
+
+    it('Get /selling/today/:id should return object not found of selling history daily', function (done) {
+        chai.request(url)
+            .get(`/selling/today/${historyId}`)
+            .end(function (err, res) {
+                 console.log('asdasdasd',res.body);
+                
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.be.a('object')
+                res.body.msg.should.equal('user not found')
+                // res.body[0].should.have.property('_id')
+                done()
+            })
+    })
+
+    it('Get /selling/today/:id should return object of selling history daily', function (done) {
+        chai.request(url)
+            .get(`/selling/today/${idTelegram}`)
+            .send({
+                userId:userId
+            })
+            .end(function (err, res) {
+                 console.log('asdasdasd',res.body);
+                
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.be.a('object')
+                res.body.msg.should.equal('data found')
+                res.body.should.have.property('result')
+                done()
+            })
+    })
+
+    
 })
