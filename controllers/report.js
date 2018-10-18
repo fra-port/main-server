@@ -1,5 +1,23 @@
 const Report = require('../models/report');
 const Selling = require('../models/sellingHistory');
+const Item = require('../models/item');
+
+const getItem = async () => {
+  try {
+    result = await Item.find()
+    let listItem = []
+    result.forEach(element => {
+      listItem.push(
+        {
+          name: element.itemName, 
+          totalSelling : 0
+        })
+      })
+    return listItem 
+ } catch(error) {
+  console.error(error);
+  }
+}
 
 const createReport = (req, res) => {
   let id = req.body.sellingId
@@ -38,6 +56,7 @@ const createReport = (req, res) => {
 
 const getReport = (req, res) => {
   Report.find().populate({ path: 'sellingId', populate: { path: 'userId' } })
+    .sort({cratedAt : 'descending'})  
     .then((result) => {
       res.status(200).json({
         msg: 'data found',
@@ -46,6 +65,47 @@ const getReport = (req, res) => {
     })
     .catch((err) => {
       res.status(500).json(err)
+    });
+}
+
+const getReportByDate = (req, res) => {
+  let start = new Date(req.query.date)
+  start.setHours(0,0,0,0)
+  let end = new Date(req.query.date)
+  end.setHours(23, 59, 59, 59)
+  Report.find({
+    createdAt: {$gte: start, $lt: end}
+  }).populate({ path: 'sellingId', populate: { path: 'userId' } })
+    .sort({cratedAt : 'descending'})
+    .then( async (result) => {
+      let listItem = await getItem()
+      let totalIncome = 0
+      result.forEach(element => {
+        totalIncome += element.total
+        element.sellingId.selling.forEach(el => {
+          listItem.forEach((elementListItem, index) => {
+            if (el.itemName.toLowerCase() == elementListItem.name.toLowerCase()) {
+              listItem[index].totalSelling += Number(el.quantity) + 0
+            }
+          })
+        })
+      });
+      
+      let data = {
+        totalReport : result.length,
+        totalIncome: totalIncome,
+        listItem,
+        result
+      }
+      res.status(200).json({
+        msg: 'data found',
+        data
+      })
+    })
+    .catch((err) => {
+      res.status(500).json({
+        msg: err.message
+      })
     });
 }
 
@@ -96,7 +156,6 @@ const removeReport = (req, res) => {
     .catch((err) => {
       res.status(500).json(err)
     });
-
 }
 
 
@@ -104,5 +163,6 @@ module.exports = {
   createReport,
   getReport,
   findReport,
-  removeReport
+  removeReport,
+  getReportByDate
 };
