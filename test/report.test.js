@@ -173,6 +173,38 @@ describe('Report', function () {
         })
     })
 
+    it('GET /reports/today should return report in specified date', function(done) {
+        let date = new Date()
+        chai.request(url)
+            .get(`/reports/day?date=${date}`)
+            .end(function(err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.should.have.property('data')
+                res.body.data.should.have.property('totalReport')
+                res.body.data.should.have.property('totalIncome')
+                res.body.data.should.have.property('listItem')
+                res.body.data.should.have.property('result')
+                done()
+            })
+    })
+
+    it('GET /reports/today should erroer to return report in specified date', function(done) {
+        let date = '2018-date'
+        chai.request(url)
+            .get(`/reports/day?date=${date}`)
+            .end(function(err, res) {
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.error.status.should.equal(500)
+                done()
+            })
+    })
+
+
     it('GET /reports/:id should return report null, data not found', function(done) {
         chai.request(url)
         .get(`/reports/${sellingId}`)
