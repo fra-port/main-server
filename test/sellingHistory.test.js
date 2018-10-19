@@ -222,14 +222,11 @@ describe('Selling History', function () {
         chai.request(url)
             .get(`/selling/today/${historyId}`)
             .end(function (err, res) {
-                 console.log('asdasdasd',res.body);
-                
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
                 res.body.should.be.a('object')
                 res.body.msg.should.equal('user not found')
-                // res.body[0].should.have.property('_id')
                 done()
             })
     })

@@ -1,7 +1,7 @@
 const Report = require('../models/report');
 const Selling = require('../models/sellingHistory');
 const Item = require('../models/item');
-// const User 
+const User = require('../models/user');
 
 const getItem = async () => {
   try {
@@ -10,13 +10,21 @@ const getItem = async () => {
     result.forEach(element => {
       listItem.push(
         {
-          name: element.itemName, 
-          totalSelling : 0
+          name: element.itemName,
+          totalSelling: 0
         })
-      })
-    return listItem 
- } catch(error) {
-  console.error(error);
+    })
+    return listItem
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const getUsers = async () => {
+  try {
+    return users = await User.find()
+  } catch (error) {
+    console.error(error)
   }
 }
 
@@ -57,7 +65,7 @@ const createReport = (req, res) => {
 
 const getReport = (req, res) => {
   Report.find().populate({ path: 'sellingId', populate: { path: 'userId' } })
-    .sort({cratedAt : 'descending'})  
+    .sort({ cratedAt: 'descending' })
     .then((result) => {
       res.status(200).json({
         msg: 'data found',
@@ -71,29 +79,31 @@ const getReport = (req, res) => {
 
 const getReportByDate = (req, res) => {
   let start = new Date(req.query.date)
-  start.setHours(0,0,0,0)
+  start.setHours(0, 0, 0, 0)
   let end = new Date(req.query.date)
   end.setHours(23, 59, 59, 59)
   Report.find({
-    createdAt: {$gte: start, $lt: end}
+    createdAt: { $gte: start, $lt: end }
   }).populate({ path: 'sellingId', populate: { path: 'userId' } })
-    .sort({cratedAt : 'descending'})
-    .then( async (result) => {
+    .sort({ cratedAt: 'descending' })
+    .then(async (result) => {
       let listItem = await getItem()
       let totalIncome = 0
       result.forEach(element => {
         totalIncome += element.total
         element.sellingId.selling.forEach(el => {
           listItem.forEach((elementListItem, index) => {
+            /* istanbul ignore next */
             if (el.itemName.toLowerCase() == elementListItem.name.toLowerCase()) {
+              /* istanbul ignore next */
               listItem[index].totalSelling += Number(el.quantity) + 0
             }
           })
         })
       });
-      
+
       let data = {
-        totalReport : result.length,
+        totalReport: result.length,
         totalIncome: totalIncome,
         listItem,
         result
@@ -161,38 +171,52 @@ const removeReport = (req, res) => {
 
 
 const getReportMonthly = (req, res) => {
-  
   let month = req.query.month
- 
   Report.find().populate({ path: 'sellingId', populate: { path: 'userId' } })
-  .then( async (result) => {
-    let listItem = await getItem()
-    let incomeMonth = 0
-    result.forEach(element => {
-      if (element.createdAt.getMonth()+1 == month) {
-        incomeMonth += element.total
-        element.sellingId.selling.forEach(el => {
-          listItem.forEach((elementListItem, index) => {
-            if (el.itemName.toLowerCase() == elementListItem.name.toLowerCase()) {
-              listItem[index].totalSelling += Number(el.quantity) + 0
-            }
+    .then(async (result) => {
+      let listItem = await getItem()
+      let incomeMonth = 0
+      result.forEach(element => {
+        if (element.createdAt.getMonth() + 1 == month) {
+          incomeMonth += element.total
+          element.sellingId.selling.forEach(el => {
+            listItem.forEach((elementListItem, index) => {
+              /* istanbul ignore next */
+              if (el.itemName.toLowerCase() == elementListItem.name.toLowerCase()) {
+                /* istanbul ignore next */
+                listItem[index].totalSelling += Number(el.quantity) + 0
+              }
+            })
           })
-        })
+        }
+      });
+
+      let getUser = await getUsers()
+      let users = { listUsers: [] }
+      getUser.forEach((element) => {
+        if (element.createdAt.getMonth() + 1 <= month) {
+          users.listUsers.push(element)
+        }
+      })
+
+      let obj = {
+        listItem: listItem,
+        incomeMonth: incomeMonth,
+        users
       }
+
+      res.status(200).json({
+        msg: 'data found',
+        obj
+      })
+    
+    })
+    .catch((err) => {
+      res.status(500).json({
+        msg: err.message
+      })
     });
-
-
-
-    console.log(listItem);
-    console.log(incomeMonth);
-    
-  })
-  .catch((err) => {
-    console.log(err);
-    
-  });
 }
-
 
 module.exports = {
   createReport,
