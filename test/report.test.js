@@ -146,38 +146,38 @@ describe('Report', function () {
             })
     })
 
-    it('GET /reports should return array of report', function(done) {
+    it('GET /reports should return array of report', function (done) {
         chai.request(url)
-        .get('/reports')
-        .end(function (err, res){
-            res.should.have.status(200)
-            res.should.be.json
-            res.should.be.a('object')
-            res.body.should.have.property('msg')
-            res.body.should.have.property('result')
-            res.body.msg.should.equal('data found')
-            done()
-        })
+            .get('/reports')
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.should.have.property('result')
+                res.body.msg.should.equal('data found')
+                done()
+            })
     })
 
-    it('GET /reports/:id should return report by id', function(done) {
+    it('GET /reports/:id should return report by id', function (done) {
         chai.request(url)
-        .get(`/reports/${reportId}`)
-        .end(function (err, res) {
-           res.should.have.status(200)
-           res.should.be.json
-           res.should.be.a('object')
-           res.body.should.have.property('msg')
-           res.body.should.have.property('result')
-           done()
-        })
+            .get(`/reports/${reportId}`)
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.should.have.property('result')
+                done()
+            })
     })
 
-    it('GET /reports/today should return report in specified date', function(done) {
+    it('GET /reports/today should return report in specified date', function (done) {
         let date = new Date()
         chai.request(url)
             .get(`/reports/day?date=${date}`)
-            .end(function(err, res) {
+            .end(function (err, res) {
                 res.should.have.status(200)
                 res.should.be.json
                 res.should.be.a('object')
@@ -191,11 +191,24 @@ describe('Report', function () {
             })
     })
 
-    it('GET /reports/today should erroer to return report in specified date', function(done) {
+    it('GET /reports/month should return report by month', function (done) {
+        chai.request(url)
+            .get(`/reports/month?month=10`)
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.should.have.property('obj')
+                done()
+            })
+    })
+
+    it('GET /reports/today should error to return report in specified date', function (done) {
         let date = '2018-date'
         chai.request(url)
             .get(`/reports/day?date=${date}`)
-            .end(function(err, res) {
+            .end(function (err, res) {
                 res.should.be.json
                 res.should.be.a('object')
                 res.body.should.have.property('msg')
@@ -205,79 +218,79 @@ describe('Report', function () {
     })
 
 
-    it('GET /reports/:id should return report null, data not found', function(done) {
+    it('GET /reports/:id should return report null, data not found', function (done) {
         chai.request(url)
-        .get(`/reports/${sellingId}`)
-        .end(function (err, res) {
-           res.should.have.status(200)
-           res.should.be.json
-           res.should.be.a('object')
-           res.body.should.have.property('msg')
-           res.body.msg.should.equal('data not found')
-           done()
-        })
+            .get(`/reports/${sellingId}`)
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.msg.should.equal('data not found')
+                done()
+            })
     })
 
-    it('GET /reports/:id should return error', function(done) {
+    it('GET /reports/:id should return error', function (done) {
         chai.request(url)
-        .get(`/reports/qqqqqqqqqadav12`)
-        .end(function (err, res) {
-            res.should.be.json
-            res.should.be.a('object')
-            res.body.should.have.property('message')
-            res.body.should.have.property('name')
-            res.body.should.have.property('value')
-            res.body.should.have.property('stringValue')
-            res.body.should.have.property('path')
-            res.error.should.have.property('status')
-            res.error.status.should.equal(500)
-            done()
-        })
+            .get(`/reports/qqqqqqqqqadav12`)
+            .end(function (err, res) {
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('message')
+                res.body.should.have.property('name')
+                res.body.should.have.property('value')
+                res.body.should.have.property('stringValue')
+                res.body.should.have.property('path')
+                res.error.should.have.property('status')
+                res.error.status.should.equal(500)
+                done()
+            })
     })
 
 
 
-    it('DELETE /reports/:id should delete a report by id', function(done) {
+    it('DELETE /reports/:id should delete a report by id', function (done) {
         chai.request(url)
-        .delete(`/reports/${reportId}`)
-        .end(function (err, res) {
-            res.should.have.status(200)
-            res.should.be.json
-            res.should.be.a('object')
-            res.body.should.have.property('msg')
-            res.body.should.have.property('result')
-            done()
-        })
+            .delete(`/reports/${reportId}`)
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.should.have.property('result')
+                done()
+            })
     })
 
-    it('DELETE /reports/:id should error when delete by id', function(done) {
+    it('DELETE /reports/:id should error when delete by id', function (done) {
         chai.request(url)
-        .delete(`/reports/5bc72f2724ece23aa5eb41hh`)
-        .end(function (err, res) {
-            res.should.be.json
-            res.should.be.a('object')
-            res.body.should.have.property('message')
-            res.body.should.have.property('name')
-            res.body.should.have.property('value')
-            res.body.should.have.property('stringValue')
-            res.body.should.have.property('path')
-            res.error.should.have.property('status')
-            res.error.status.should.equal(500)
-            done()
-        })
+            .delete(`/reports/5bc72f2724ece23aa5eb41hh`)
+            .end(function (err, res) {
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('message')
+                res.body.should.have.property('name')
+                res.body.should.have.property('value')
+                res.body.should.have.property('stringValue')
+                res.body.should.have.property('path')
+                res.error.should.have.property('status')
+                res.error.status.should.equal(500)
+                done()
+            })
     })
 
-    it('DELETE /reports/:id should return data not found', function(done) {
+    it('DELETE /reports/:id should return data not found', function (done) {
         chai.request(url)
-        .delete(`/reports/${sellingId}`)
-        .end(function (err, res) {
-            res.should.have.status(200)
-            res.should.be.json
-            res.should.be.a('object')
-            res.body.should.have.property('msg')
-            res.body.msg.should.equal('data not found')
-            done()
-        })
+            .delete(`/reports/${sellingId}`)
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.have.property('msg')
+                res.body.msg.should.equal('data not found')
+                done()
+            })
     })
 
 
