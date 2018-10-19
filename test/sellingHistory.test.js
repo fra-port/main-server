@@ -84,22 +84,21 @@ describe('Selling History', function () {
                     quantity: 1,
                     Total: 10000
                 }, {
-                    itemName: "paha",
+                    itemName: "paha atas",
                     quantity: 2,
-                    total: 15000
+                    Total: 15000
                 }]
             })
             .end(function (err, res) {
-
                 res.should.have.status(201)
                 res.should.be.json;
                 res.body.should.be.a('object')
-                res.body.msg.should.equal('create selling succes')
-                res.body.result.should.be.a('object')
-                res.body.result.should.have.property('userId')
-                res.body.result.should.have.property('selling')
-                res.body.result.should.have.property('createdAt')
-                res.body.result.should.have.property('updatedAt')
+                res.body.msg.should.equal('create succes')
+                res.body.resultReport.should.be.a('object')
+                res.body.resultReport.should.have.property('total')
+                res.body.resultReport.should.have.property('sellingId')
+                res.body.resultReport.should.have.property('createdAt')
+                res.body.resultReport.should.have.property('updatedAt')
                 done()
             })
     })
