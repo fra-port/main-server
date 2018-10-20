@@ -85,7 +85,7 @@ const getReportByDate = (req, res) => {
   Report.find({
     createdAt: { $gte: start, $lt: end }
   }).populate({ path: 'sellingId', populate: { path: 'userId' } })
-    .sort({ cratedAt: 'descending' })
+    .sort({ createdAt: 'descending' })
     .then(async (result) => {
       let listItem = await getItem()
       let totalIncome = 0
