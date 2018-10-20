@@ -29,9 +29,7 @@ describe('Selling History', function () {
                 .then(function (result) {
                     userId = result._id
                     idTelegram = result.idTelegram
-
                     if (result) {
-
                         sellingHistory.create({
                             userId: userId,
                             selling: [{
@@ -45,8 +43,6 @@ describe('Selling History', function () {
                             }]
                         })
                             .then(function (resultHistory) {
-                                // console.log('oooo',result);
-
                                 historyId = resultHistory._id
                                 done()
                             })
@@ -241,11 +237,35 @@ describe('Selling History', function () {
                 res.should.be.json
                 res.should.be.a('object')
                 res.body.should.be.a('object')
-                res.body.msg.should.equal('data found')
                 res.body.should.have.property('result')
                 done()
             })
     })
+
+    it('Get /selling/user/:userId should return object of user selling history', function (done) {
+        chai.request(url)
+            .get(`/selling/user/${userId}`)
+            .end(function (err, res) {
+                res.should.have.status(200)
+                res.should.be.json
+                res.should.be.a('object')
+                done()
+            })
+    })
+
+    it('Get /selling/user/:userId should  error return object of user selling history', function (done) {
+        chai.request(url)
+            .get(`/selling/user/kjbfvif`)
+            .end(function (err, res) {
+                res.should.have.status(500)
+                res.should.be.json
+                res.should.be.a('object')
+                res.body.should.be.a('object')
+                done()
+            })
+    })
+
+
 
     
 })

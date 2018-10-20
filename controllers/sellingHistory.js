@@ -153,6 +153,20 @@ const removeSelling = (req, res) => {
         });
 }
 
+const getSellingUser = (req, res) => {
+    Selling
+        .find({ userId: req.params.userId })
+        .populate('userId')
+        .sort({ createdAt: 'descending' })
+        .then((result) => {
+            res.status(200).json(result)
+        })
+        .catch((err) => {
+            /* istanbul ignore next */
+            res.status(500).json(err)
+        });
+}
+
 
 module.exports = {
     getSelling,
@@ -160,5 +174,6 @@ module.exports = {
     findSelling,
     updateSelling,
     removeSelling,
-    findUserTodaySelling
+    findUserTodaySelling,
+    getSellingUser
 };
