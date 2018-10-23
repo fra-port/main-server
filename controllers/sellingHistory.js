@@ -1,18 +1,42 @@
 const Selling = require('../models/sellingHistory');
 const User = require('../models/user');
+const Item = require('../models/item');
 const Report = require('../models/report');
 const moment = require('moment');
 
+const getItem = async () => {
+    try {
+        return result = await Item.find()
+    } catch (err) {
+        console.log(err.message);
+
+    }
+}
+
 const createSelling = (req, res) => {
+   
     let { idTelegram, item } = req.body
     User.findOne({
         idTelegram: idTelegram
     })
-        .then((result) => {
+        .then(async (result) => {
             if (result) {
+
+                let dataItems = await getItem()
+
+                let newItem = []
+                item.forEach(itemReq => {
+                    dataItems.forEach(dataItem => {
+                        if (itemReq.itemName.toLowerCase() == dataItem.itemName.toLowerCase()) {
+                            itemReq.Total = itemReq.quantity * dataItem.price
+                            newItem.push(itemReq)
+                        }
+                    })
+                });
+
                 Selling.create({
                     userId: result._id,
-                    selling: item
+                    selling: newItem
                 })
                     .then((result) => {
                         let totalSelling = 0
