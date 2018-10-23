@@ -167,6 +167,21 @@ const getSellingUser = (req, res) => {
         });
 }
 
+const getSellingTelegram = (req, res) => {
+    User.findOne({ idTelegram: req.params.id })
+        .then(result => {
+            if (result) {
+                req.params.userId = result._id
+                getSellingUser(req, res)
+            } else {
+                res.status(400).json({ msg: 'data not found' })
+            }
+        })
+        .catch(err => {
+            res.status(500).json(err)
+        })
+}
+
 
 module.exports = {
     getSelling,
@@ -175,5 +190,6 @@ module.exports = {
     updateSelling,
     removeSelling,
     findUserTodaySelling,
-    getSellingUser
+    getSellingUser,
+    getSellingTelegram
 };
