@@ -1,6 +1,7 @@
 const Selling = require('../models/sellingHistory');
 const User = require('../models/user');
 const Report = require('../models/report');
+const moment = require('moment');
 
 const createSelling = (req, res) => {
     let { idTelegram, item } = req.body
@@ -86,29 +87,34 @@ const findUserTodaySelling = (req, res) => {
     })
         .then((user) => {
             if (user) {
-                Selling.findOne({ userId: user._id })
+                var today = moment().startOf('day')
+                var tomorrow = moment(today).endOf('day')
+
+                Selling.find({
+                    userId: user._id,
+                    createdAt: {
+                        $gte: today.toDate(),
+                        $lt: tomorrow.toDate()
+                    }
+                })
                     .then((result) => {
-                        if (result == null) {
+                        if (result.length > 0) {
                             res.status(200).json({
-                                msg: 'data not found',
+                                msg: 'data found',
+                                result
                             })
                         } else {
-                            let sellingDate = new Date(result.createdAt)
-                            let nowDate = new Date()
-                            if (sellingDate.getDate() === nowDate.getDate()) {
-                                res.status(200).json({
-                                    msg: 'data found',
-                                    result
-                                })
-                            } else {
-                                res.status(200).json({
-                                    msg: 'data not found for today',
-                                })
-                            }
+                            res.status(200).json({
+                                msg: 'data not found'
+                            })
                         }
-                    }).catch((err) => {
-                        res.status(500).json(err)
+                    })
+                    .catch((err) => {
+                        res.status(400).json(
+                            { msg: err.message }
+                        )
                     });
+
             } else {
                 res.status(200).json({
                     msg: 'user not found'
