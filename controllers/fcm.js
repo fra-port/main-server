@@ -46,7 +46,7 @@ const sendNotif = function (name, total) {
           const message = {
             notification: {
               title: 'Omzet Daily Report',
-              body: `agent ${name} sent report with total income $Rp.${total.toLocaleString()}`
+              body: `agent ${name} sent report with total income Rp.${total.toLocaleString()}`
             },
             token: registrationToken
           };
