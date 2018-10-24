@@ -7,9 +7,6 @@ const mongoose = require('mongoose')
 const Item = require('../models/item');
 chai.should()
 chai.use(chaiHttp)
-
-console.log('masuk tets');
-
 let url = "http://localhost:3000"
 let idItem = ""
 

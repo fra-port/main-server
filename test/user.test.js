@@ -38,7 +38,6 @@ describe('User', function() {
   afterEach((done) => {
     User.collection.drop()
     .then (function () {
-      // console.log("drop User collection");
       done()
     })
   })

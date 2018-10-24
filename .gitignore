@@ -1,3 +1,4 @@
 node_modules
 .env
 .nyc_output
+fcm_service_account.json

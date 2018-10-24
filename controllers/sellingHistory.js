@@ -3,6 +3,7 @@ const User = require('../models/user');
 const Item = require('../models/item');
 const Report = require('../models/report');
 const moment = require('moment');
+const {sendNotif} = require('./fcm')
 
 const getItem = async () => {
     try {
@@ -38,16 +39,17 @@ const createSelling = (req, res) => {
                     userId: result._id,
                     selling: newItem
                 })
-                    .then((result) => {
+                    .then((resultSelling) => {
                         let totalSelling = 0
-                        result.selling.forEach(element => {
+                        resultSelling.selling.forEach(element => {
                             totalSelling += element.Total
                         });
                         Report.create({
                             total: totalSelling,
-                            sellingId: result._id
+                            sellingId: resultSelling._id
                         })
                             .then((resultReport) => {
+                                sendNotif(result.firstName, resultReport.total)
                                 res.status(201).json({
                                     msg: 'create succes',
                                     resultReport
