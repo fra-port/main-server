@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 var fcmSchema = new Schema({
-   token: {type: String},
+   token: {type: String, required: 'token is required'},
 }, {
     timestamps: true
 });

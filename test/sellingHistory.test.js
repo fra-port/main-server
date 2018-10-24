@@ -269,7 +269,6 @@ describe('Selling History', function () {
         chai.request(url)
             .get(`/selling/telegram/${idTelegram}`)
             .end(function (err, res) {
-                // console.log('ini res test',res.body)
                 res.should.have.status(200)
                 res.should.be.json
                 res.body.should.be.a('array')
@@ -281,7 +280,6 @@ describe('Selling History', function () {
         chai.request(url)
             .get(`/selling/telegram/16`)
             .end(function (err, res) {
-                console.log('ini res test',res.body)
                 res.should.have.status(400)
                 res.should.be.json
                 res.body.should.be.a('object')

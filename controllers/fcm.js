@@ -41,8 +41,11 @@ const sendNotif = function (name, total) {
   Fcm.find()
     .then((result) => {
       if (result.length > 0) {
+        /* istanbul ignore next */
         result.forEach(data => {
+          /* istanbul ignore next */
           const registrationToken = data.token
+          /* istanbul ignore next */
           const message = {
             notification: {
               title: 'Omzet Daily Report',
@@ -52,13 +55,16 @@ const sendNotif = function (name, total) {
           };
           admin.messaging().send(message)
             .then((response) => {
+              /* istanbul ignore next */
               console.log('Successfully sent message:', response);
             })
             .catch((error) => {
+              /* istanbul ignore next */
               console.log('Error sending message:', error);
             });
         })
       } else {
+        /* istanbul ignore next */
         console.log('data not found')
       }
     })
@@ -69,16 +75,12 @@ const remove = function (req, res) {
     token: req.body.token
   })
   .then(result => {
-    if (result) 
+    if (result.n === 1) 
       res.status(200)
         .json({ msg: 'success delete' })
     else
       res.status(400)
         .json({ msg: 'not found' })
-  })
-  .catch (err => {
-    res.status(400)
-      .json({ msg: err.message })
   })
 }
 
